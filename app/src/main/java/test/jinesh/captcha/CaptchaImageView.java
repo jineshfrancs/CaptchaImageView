@@ -113,8 +113,8 @@ public class CaptchaImageView extends ImageView {
                     Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitMap);
             canvas.drawColor(Color.parseColor("#F7F7FF"));
-            int textX = generateRandomInt(width-((width/4)*3), width / 2);
-            int textY = generateRandomInt(height / 3, height - (height / 4));
+            int textX = generateRandomInt(width-((width/5)*4), width / 2);
+            int textY = generateRandomInt(height-((height / 3)), height - (height / 4));
             String generatedText = drawRandomText(canvas, paint, textX, textY, length, type);
             canvas.drawLine(textX, textY - generateRandomInt(7,10), textX + (length * 23), textY - generateRandomInt(5,10), paint);
             canvas.drawLine(textX, textY - generateRandomInt(7,10), textX + (length * 23), textY - generateRandomInt(5,10), paint);
