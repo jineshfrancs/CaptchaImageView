@@ -1,5 +1,7 @@
 # CaptchaImageView
 Custom ImageView to generate captcha image.
+
+
 ![Output sample](https://github.com/jineshfrancs/CaptchaImageView/blob/master/screens/captcha_screen.gif)
 
 Add CaptchaImageView to your layout
