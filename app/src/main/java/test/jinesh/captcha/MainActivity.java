@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         submitButton= (Button) findViewById(R.id.submitButton);
         captchaImageView= (CaptchaImageView) findViewById(R.id.image);
         captchaImageView.setCaptchaType(CaptchaImageView.CaptchaGenerator.BOTH);
-        captchaImageView.setIsDotNeeded(true);
+        //captchaImageView.setIsDotNeeded(true); //do this if you need dotted background
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
