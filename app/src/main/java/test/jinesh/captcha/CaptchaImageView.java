@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.util.Random;
@@ -19,7 +20,9 @@ public class CaptchaImageView extends ImageView {
     private CaptchaGenerator.Captcha generatedCaptcha;
     private int captchaLength = 6;
     private int captchaType = CaptchaGenerator.NUMBERS;
-    private int width,height;
+    private int width, height;
+    private boolean isDot;
+    private boolean isRedraw;
     public CaptchaImageView(Context context) {
         super(context);
     }
@@ -30,7 +33,7 @@ public class CaptchaImageView extends ImageView {
     }
 
     private void draw(int width, int height) {
-        generatedCaptcha = CaptchaGenerator.regenerate(width, height, captchaLength, captchaType);
+        generatedCaptcha = CaptchaGenerator.regenerate(width, height, captchaLength, captchaType, isDot);
     }
 
     @Override
@@ -41,8 +44,8 @@ public class CaptchaImageView extends ImageView {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        width=getMeasuredWidth();
-        height=getMeasuredHeight();
+        width = getMeasuredWidth();
+        height = getMeasuredHeight();
     }
 
     /**
@@ -90,39 +93,76 @@ public class CaptchaImageView extends ImageView {
     public void setCaptchaLength(int length) {
         captchaLength = length;
     }
+
     /**
      * Redraws the captcha
-     * */
-    private void reDraw(){
+     */
+    private void reDraw() {
         draw(width, height);
         setImageBitmap(generatedCaptcha.getBitmap());
     }
+
+    /**
+     * Method to set Background dots
+     *
+     * @param isNeeded pass true if dots needed false otherwise
+     */
+    public void setIsDotNeeded(boolean isNeeded) {
+        isDot = isNeeded;
+    }
+
     public static class CaptchaGenerator {
         public static final int ALPHABETS = 1, NUMBERS = 2, BOTH = 3;
 
-        private static Captcha regenerate(int width, int height, int length, int type) {
+        private static Captcha regenerate(int width, int height, int length, int type, boolean isDot) {
             Paint border = new Paint();
             border.setStyle(Paint.Style.STROKE);
             border.setColor(Color.parseColor("#CCCCCC"));
             Paint paint = new Paint();
             paint.setColor(Color.BLACK);
             paint.setStyle(Paint.Style.FILL_AND_STROKE);
-            paint.setTypeface(Typeface.MONOSPACE);
+            if (isDot)
+                paint.setTypeface(Typeface.DEFAULT_BOLD);
+            else
+                paint.setTypeface(Typeface.MONOSPACE);
             Bitmap bitMap = Bitmap.createBitmap(width,
                     height,
                     Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitMap);
             canvas.drawColor(Color.parseColor("#F7F7FF"));
-            int textX = generateRandomInt(width-((width/5)*4), width / 2);
-            int textY = generateRandomInt(height-((height / 3)), height - (height / 4));
-            String generatedText = drawRandomText(canvas, paint, textX, textY, length, type);
-            canvas.drawLine(textX, textY - generateRandomInt(7,10), textX + (length * 23), textY - generateRandomInt(5,10), paint);
-            canvas.drawLine(textX, textY - generateRandomInt(7,10), textX + (length * 23), textY - generateRandomInt(5,10), paint);
+            int textX = generateRandomInt(width - ((width / 5) * 4), width / 2);
+            int textY = generateRandomInt(height - ((height / 3)), height - (height / 4));
+            String generatedText = drawRandomText(canvas, paint, textX, textY, length, type, isDot);
+            if (isDot) {
+                canvas.drawLine(textX, textY - generateRandomInt(7, 10), textX + (length * 33), textY - generateRandomInt(5, 10), paint);
+                canvas.drawLine(textX, textY - generateRandomInt(7, 10), textX + (length * 33), textY - generateRandomInt(5, 10), paint);
+            } else {
+                canvas.drawLine(textX, textY - generateRandomInt(7, 10), textX + (length * 23), textY - generateRandomInt(5, 10), paint);
+                canvas.drawLine(textX, textY - generateRandomInt(7, 10), textX + (length * 23), textY - generateRandomInt(5, 10), paint);
+            }
             canvas.drawRect(0, 0, width - 1, height - 1, border);
+            if (isDot)
+                makeDots(bitMap, width, height, textX, textY);
             return (new Captcha(generatedText, bitMap));
         }
 
-        private static String drawRandomText(Canvas canvas, Paint paint, int textX, int textY, int length, int type) {
+        private static void makeDots(Bitmap bitMap, int width, int height, int textX, int textY) {
+            int white = -526337;
+            int black = -16777216;
+            int grey=-3355444;
+            Random random = new Random();
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    int pixel = bitMap.getPixel(x, y);
+                    if (pixel == white) {
+                        pixel = (random.nextBoolean()) ? black : white;
+                    }
+                    bitMap.setPixel(x, y, pixel);
+                }
+            }
+        }
+
+        private static String drawRandomText(Canvas canvas, Paint paint, int textX, int textY, int length, int type, boolean isDot) {
             String generatedCaptcha = "";
             int[] scewRange = {-1, 1};
             int[] textSizeRange = {40, 42, 44, 45};
@@ -132,7 +172,10 @@ public class CaptchaImageView extends ImageView {
                 String temp = generateRandomText(type);
                 generatedCaptcha = generatedCaptcha + temp;
                 paint.setTextSize(textSizeRange[random.nextInt(textSizeRange.length)]);
-                canvas.drawText(temp, textX + (index * 20), textY, paint);
+                if (isDot)
+                    canvas.drawText(temp, textX + (index * 25), textY, paint);
+                else
+                    canvas.drawText(temp, textX + (index * 20), textY, paint);
             }
             return generatedCaptcha;
         }
@@ -140,7 +183,7 @@ public class CaptchaImageView extends ImageView {
         private static String generateRandomText(int type) {
             String[] numbers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
             String[] alphabets = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
-                    ,"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+                    , "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
             Random random = new Random();
             Random mixedRandom = new Random();
             String temp;
@@ -195,6 +238,10 @@ public class CaptchaImageView extends ImageView {
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
-        reDraw();
+        if(!isRedraw){
+            reDraw();
+            isRedraw=true;
+        }
+
     }
 }
