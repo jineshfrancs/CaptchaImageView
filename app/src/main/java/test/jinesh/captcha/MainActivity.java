@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import test.jinesh.captchaimageviewlib.CaptchaImageView;
+
 public class MainActivity extends AppCompatActivity {
     ImageView refreshButton;
     EditText captchaInput;
