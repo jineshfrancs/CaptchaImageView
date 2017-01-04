@@ -33,3 +33,22 @@ Call getCaptchaCode() method on CaptchaImageView to read last generated captcha 
 
 ```
 
+Use in your project
+------
+
+1.Add it in your root build.gradle at the end of repositories:
+```
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+
+2.Add the dependency in your app build.gradle file:
+```
+dependencies {
+	        compile 'com.github.jineshfrancs:CaptchaImageView:1.0'
+}
+```
