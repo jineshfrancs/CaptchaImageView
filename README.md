@@ -8,7 +8,7 @@ Custom ImageView to generate captcha image.
 ![Output sample](https://github.com/jineshfrancs/CaptchaImageView/blob/master/screens/captcha_screen.gif) ![Output sample](https://github.com/jineshfrancs/CaptchaImageView/blob/master/screens/captcha_screen_2.gif)
 
 Add CaptchaImageView to your layout
-```
+```xml
  <test.jinesh.captcha.CaptchaImageView
             android:layout_width="wrap_content"
             android:id="@+id/image"
@@ -19,7 +19,7 @@ Add CaptchaImageView to your layout
 ```
 Call regenerate() method on CaptchaImageView to regenerate your captcha
 
-```
+```java
  captchaImageView= (CaptchaImageView) findViewById(R.id.image);
  refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -31,7 +31,7 @@ Call regenerate() method on CaptchaImageView to regenerate your captcha
 
 Call getCaptchaCode() method on CaptchaImageView to read last generated captcha code.
 
-```
+```java
  captchaImageView.getCaptchaCode()
 
 ```
@@ -40,7 +40,7 @@ Use in your project
 ------
 
 1.Add it in your root build.gradle at the end of repositories:
-```
+```gradle
 	allprojects {
 		repositories {
 			...
@@ -50,7 +50,7 @@ Use in your project
 ```
 
 2.Add the dependency in your app build.gradle file:
-```
+```gradle
 dependencies {
 	        compile 'com.github.jineshfrancs:CaptchaImageView:1.0'
 }
