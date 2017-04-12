@@ -1,6 +1,6 @@
 # CaptchaImageView
 
-[![Github All Releases](https://img.shields.io/github/downloads/CaptchaImageView/CaptchaImageView/total.svg)](https://github.com/jineshfrancs/CaptchaImageView/archive/1.0.zip) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-CaptchaImageView-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/4719)
+[![Github All Releases](https://img.shields.io/github/downloads/CaptchaImageView/CaptchaImageView/total.svg)](https://github.com/jineshfrancs/CaptchaImageView/archive/1.0.zip) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-CaptchaImageView-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/4719)  <a target="_blank" href="https://www.paypal.me/JINESHFRANCIS" title="Donate using PayPal"><img src="https://img.shields.io/badge/paypal-donate-yellow.svg" /></a>
 
 Custom ImageView to generate captcha image.
 
