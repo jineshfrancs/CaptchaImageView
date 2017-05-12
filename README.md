@@ -9,7 +9,7 @@ Custom ImageView to generate captcha image.
 
 Add CaptchaImageView to your layout
 ```xml
- <test.jinesh.captcha.CaptchaImageView
+ <test.jinesh.captchaimageviewlib.CaptchaImageView
             android:layout_width="wrap_content"
             android:id="@+id/image"
             android:layout_weight="6"
