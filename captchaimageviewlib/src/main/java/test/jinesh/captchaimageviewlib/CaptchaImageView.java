@@ -141,8 +141,10 @@ public class CaptchaImageView extends ImageView {
         post(new Runnable() {
             @Override
             public void run() {
-                draw(width, height);
-                setImageBitmap(generatedCaptcha.getBitmap());
+                if(width!=0 && height!=0) {
+                    draw(width, height);
+                    setImageBitmap(generatedCaptcha.getBitmap());
+                }
             }
         });
 
