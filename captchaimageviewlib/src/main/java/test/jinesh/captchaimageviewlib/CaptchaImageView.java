@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.util.Random;
@@ -15,13 +16,17 @@ import java.util.Random;
  * Created by Jinesh Francis on 24-11-2016.
  */
 
-public class CaptchaImageView extends ImageView {
+public class CaptchaImageView extends android.support.v7.widget.AppCompatImageView {
+    public static final int TYPE_ITALIC = 100;
+    public static final int TYPE_PLAIN_TEXT = 101;
     private CaptchaGenerator.Captcha generatedCaptcha;
     private int captchaLength = 6;
     private int captchaType = CaptchaGenerator.NUMBERS;
     private int width, height;
     private boolean isDot;
     private boolean isRedraw;
+    private boolean isItalic = true;
+
     public CaptchaImageView(Context context) {
         super(context);
     }
@@ -32,7 +37,7 @@ public class CaptchaImageView extends ImageView {
     }
 
     private void draw(int width, int height) {
-        generatedCaptcha = CaptchaGenerator.regenerate(width, height, captchaLength, captchaType, isDot);
+        generatedCaptcha = CaptchaGenerator.regenerate(width, height, captchaLength, captchaType, isDot, isItalic);
     }
 
     @Override
@@ -126,6 +131,28 @@ public class CaptchaImageView extends ImageView {
     }
 
     /**
+     * Sets the style of captcha need to generate.Default value is TYPE_ITALIC
+     *
+     * @param style Style of the captcha
+     *              CaptchaImageView.TYPE_ITALIC - Generates a captcha with italic style
+     *              CaptchaImageView.TYPE_PLAIN_TEXT - Generates a captcha with plain text style
+     */
+    public void setTextStyle(int style) {
+        switch (style) {
+            case TYPE_ITALIC:
+                isItalic = true;
+                break;
+            case TYPE_PLAIN_TEXT:
+                isItalic = false;
+                break;
+            default:
+                isItalic = true;
+                break;
+        }
+
+    }
+
+    /**
      * Sets the desired length of captcha need to generate
      *
      * @param length length of captcha
@@ -141,7 +168,7 @@ public class CaptchaImageView extends ImageView {
         post(new Runnable() {
             @Override
             public void run() {
-                if(width!=0 && height!=0) {
+                if (width != 0 && height != 0) {
                     draw(width, height);
                     setImageBitmap(generatedCaptcha.getBitmap());
                 }
@@ -159,10 +186,20 @@ public class CaptchaImageView extends ImageView {
         isDot = isNeeded;
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+        if (!isRedraw) {
+            reDraw();
+            isRedraw = true;
+        }
+
+    }
+
     public static class CaptchaGenerator {
         public static final int ALPHABETS = 1, NUMBERS = 2, BOTH = 3;
 
-        private static Captcha regenerate(int width, int height, int length, int type, boolean isDot) {
+        private static Captcha regenerate(int width, int height, int length, int type, boolean isDot, boolean isItalic) {
             Paint border = new Paint();
             border.setStyle(Paint.Style.STROKE);
             border.setColor(Color.parseColor("#CCCCCC"));
@@ -180,7 +217,7 @@ public class CaptchaImageView extends ImageView {
             canvas.drawColor(Color.parseColor("#F7F7FF"));
             int textX = generateRandomInt(width - ((width / 5) * 4), width / 2);
             int textY = generateRandomInt(height - ((height / 3)), height - (height / 4));
-            String generatedText = drawRandomText(canvas, paint, textX, textY, length, type, isDot);
+            String generatedText = drawRandomText(canvas, paint, textX, textY, length, type, isDot, isItalic);
             if (isDot) {
                 canvas.drawLine(textX, textY - generateRandomInt(7, 10), textX + (length * 33), textY - generateRandomInt(5, 10), paint);
                 canvas.drawLine(textX, textY - generateRandomInt(7, 10), textX + (length * 33), textY - generateRandomInt(5, 10), paint);
@@ -197,7 +234,7 @@ public class CaptchaImageView extends ImageView {
         private static void makeDots(Bitmap bitMap, int width, int height, int textX, int textY) {
             int white = -526337;
             int black = -16777216;
-            int grey=-3355444;
+            int grey = -3355444;
             Random random = new Random();
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
@@ -210,12 +247,12 @@ public class CaptchaImageView extends ImageView {
             }
         }
 
-        private static String drawRandomText(Canvas canvas, Paint paint, int textX, int textY, int length, int type, boolean isDot) {
+        private static String drawRandomText(Canvas canvas, Paint paint, int textX, int textY, int length, int type, boolean isDot, boolean isItalic) {
             String generatedCaptcha = "";
             int[] scewRange = {-1, 1};
             int[] textSizeRange = {40, 42, 44, 45};
             Random random = new Random();
-            paint.setTextSkewX(scewRange[random.nextInt(scewRange.length)]);
+            paint.setTextSkewX((isItalic) ? scewRange[random.nextInt(scewRange.length)] : 0);
             for (int index = 0; index < length; index++) {
                 String temp = generateRandomText(type);
                 generatedCaptcha = generatedCaptcha + temp;
@@ -279,16 +316,6 @@ public class CaptchaImageView extends ImageView {
             public void setBitmap(Bitmap bitmap) {
                 this.bitmap = bitmap;
             }
-        }
-
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
-        super.onWindowFocusChanged(hasWindowFocus);
-        if(!isRedraw){
-            reDraw();
-            isRedraw=true;
         }
 
     }
